@@ -4,23 +4,19 @@
  */
 package com.mycompany.chatapp;
 
-import java.io.File;
 import java.util.Scanner;
 
-/**
- *
- * @author Student
- */
 public class QuickChat {
 
     public static void main(String[] args) {
-        
-        Scanner input = new Scanner (System.in);
 
-        // REGISTRATION
+        Scanner input = new Scanner(System.in);
+
+        // REGISTRATION: USERNAME
         String username;
 
         while (true) {
+
             System.out.print("Enter your username: ");
             username = input.nextLine();
 
@@ -30,10 +26,10 @@ public class QuickChat {
             }
 
             System.out.println(
-                "Username is not correctly formatted; "
-                + "please ensure that your username contains "
-                + "an underscore and is no more than five "
-                + "characters in length."
+                    "Username is not correctly formatted; "
+                    + "please ensure that your username contains "
+                    + "an underscore and is no more than five "
+                    + "characters in length."
             );
         }
 
@@ -43,9 +39,11 @@ public class QuickChat {
         System.out.print("Enter your last name: ");
         String lastName = input.nextLine();
 
+        // REGISTRATION: PASSWORD
         String password;
 
         while (true) {
+
             System.out.print("Enter your password: ");
             password = input.nextLine();
 
@@ -54,59 +52,77 @@ public class QuickChat {
             boolean hasSpecial = false;
 
             for (char c : password.toCharArray()) {
+
                 if (Character.isUpperCase(c)) {
                     hasCapital = true;
-                } else if (Character.isDigit(c)) {
+                }
+
+                if (Character.isDigit(c)) {
                     hasNumber = true;
-                } else if (!Character.isLetterOrDigit(c)) {
+                }
+
+                if (!Character.isLetterOrDigit(c)) {
                     hasSpecial = true;
                 }
             }
 
             if (password.length() >= 8
-                    && hasCapital && hasNumber && hasSpecial) {
+                    && hasCapital
+                    && hasNumber
+                    && hasSpecial) {
+
                 System.out.println("Password successfully captured.");
                 break;
             }
 
             System.out.println(
-                "Password is not correctly formatted; "
-                + "please ensure that the password contains at "
-                + "least eight characters, a capital letter, "
-                + "a number, and a special character."
+                    "Password is not correctly formatted; "
+                    + "please ensure that the password contains at "
+                    + "least eight characters, a capital letter, "
+                    + "a number, and a special character."
             );
         }
 
+        // REGISTRATION: CELL NUMBER
         String cellNumber;
 
         while (true) {
-            System.out.print("Enter your South African cell number: ");
+
+            System.out.print(
+                    "Enter your South African cell number: "
+            );
+
             cellNumber = input.nextLine();
 
             if (cellNumber.startsWith("+27")
                     && cellNumber.length() == 12
                     && cellNumber.substring(3).matches("\\d{9}")) {
+
                 System.out.println(
-                    "Cell phone number successfully captured."
+                        "Cell phone number successfully captured."
                 );
+
                 break;
             }
 
             System.out.println(
-                "Cell phone number incorrectly formatted or does "
-                + "not contain a valid international code."
+                    "Cell phone number incorrectly formatted or "
+                    + "does not contain a valid international code."
             );
         }
 
-        // CREATE USER AND REGISTER
-        Login user = new Login(username, password, cellNumber);
+        // REGISTER USER
+        Login user = new Login(
+                username, password, cellNumber
+        );
 
         String registrationResult = user.registerUser();
+
         System.out.println(registrationResult);
 
-        // IMPORTANT: The full stop must match Login.java
         if (!registrationResult.equals(
                 "User has been registered successfully.")) {
+
             input.close();
             return;
         }
@@ -120,29 +136,32 @@ public class QuickChat {
         System.out.print("Enter your password to login: ");
         String loginPassword = input.nextLine();
 
-        boolean loginStatus =
-                user.loginUser(loginUsername, loginPassword);
-
-        System.out.println(
-            user.returnLoginStatus(loginStatus, firstName, lastName)
+        boolean loginStatus = user.loginUser(
+                loginUsername, loginPassword
         );
 
-        // Do not display the menu unless login succeeds
+        System.out.println(
+                user.returnLoginStatus(
+                        loginStatus, firstName, lastName
+                )
+        );
+
+        // Do not continue if login fails.
         if (!loginStatus) {
             input.close();
             return;
         }
 
-        // WELCOME MESSAGE
         System.out.println("\nWelcome to QuickChat.");
 
-        // SET THE MAXIMUM NUMBER OF MESSAGES FOR THIS SESSION
+        // SET MESSAGE LIMIT
         int maxMessages;
 
         while (true) {
+
             maxMessages = readInteger(
-                input,
-                "How many messages do you wish to enter? "
+                    input,
+                    "How many messages do you wish to enter? "
             );
 
             if (maxMessages > 0) {
@@ -150,175 +169,298 @@ public class QuickChat {
             }
 
             System.out.println(
-                "Please enter a number greater than zero."
+                    "Please enter a number greater than zero."
             );
         }
 
         int messagesEntered = 0;
-        int totalMessagesSent = 0;
         boolean running = true;
 
-        // MAIN MENU: REPEATS UNTIL THE USER QUITS
+        // MAIN MENU
         while (running) {
 
-        System.out.println("\nPlease choose an option:");
-        System.out.println("1) Send Messages");
-        System.out.println("2) Show recently sent messages");
-        System.out.println("3) Quit");
+            System.out.println("\nPlease choose an option:");
+            System.out.println("1) Send Messages");
+            System.out.println("2) Show recently sent messages");
+            System.out.println("3) Quit");
+            System.out.println("4) Stored Messages");
 
-         int option = readInteger(input, "Choose an option: ");
+            int option = readInteger(input, "Choose an option: ");
 
-          switch (option) {
+            switch (option) {
 
-              case 1:
+                case 1:
 
-        if (messagesEntered >= maxMessages) {
-            System.out.println(
-            "You have reached your message limit of "
-             + maxMessages + " messages."
-             );
-                break;
-             }
+                    if (messagesEntered >= maxMessages) {
 
-            // Enter messages only up to the chosen limit
-            while (messagesEntered < maxMessages) {
-
-            System.out.println(
-            "\nEntering message "
-             + (messagesEntered + 1)
-             + " of " + maxMessages
-             );
-
-            System.out.print("Enter recipient number: ");
-            String recipient = input.nextLine();
-
-            System.out.print("Enter your message: ");
-            String messageText = input.nextLine();
-
-            // Count this message entry
-            messagesEntered++;
-
-            Message msg = new Message(
-            recipient, messageText
-            );
-
-            // Validate recipient
-            if (!msg.checkRecipientCell()) {
-            System.out.println(
-            "Invalid recipient number. "
-            + "Please use +27 followed by "
-            + "9 digits."
-            );
-                       continue;
-                 }
-
-            // Validate message ID
-            if (!msg.checkMessageID()) {
-            System.out.println("Invalid message ID.");
-            continue;
-            }
-
-            // Validate message length
-            String messageStatus = msg.sentMessage();
-
-            if (!messageStatus.equals(
-            "Message ready to send")) {
-             System.out.println(messageStatus);
-                continue;
-            }
-
-            System.out.println(msg.printMessage());
-            System.out.println("\n1) Send Message");
-            System.out.println("2) Disregard Message");
-            System.out.println("3) Store Message");
-
-                int choice = readInteger(
-            input, "Choose an option: "
+                        System.out.println(
+                                "You have reached your message limit of "
+                                + maxMessages + " messages."
                         );
 
-            if (choice == 1) {
+                        break;
+                    }
 
-            totalMessagesSent++;
+                    // Allow only the selected number of messages.
+                    while (messagesEntered < maxMessages) {
 
-            System.out.println(
-            "Message successfully sent."
-                 );
+                        System.out.println(
+                                "\nEntering message "
+                                + (messagesEntered + 1)
+                                + " of " + maxMessages
+                        );
 
-                 } else if (choice == 2) {
+                        System.out.print("Enter recipient number: ");
+                        String recipient = input.nextLine();
 
-            System.out.println(
-            "Message disregarded."
-                );
+                        System.out.print("Enter your message: ");
+                        String messageText = input.nextLine();
 
-                } else if (choice == 3) {
+                        Message msg = new Message(
+                                cellNumber, recipient, messageText
+                        );
 
-                 msg.storeMessage();
+                        // Validate the recipient.
+                        if (!msg.checkRecipientCell()) {
 
-            System.out.println(
-            "Message successfully stored."
-                );
+                            System.out.println(
+                                    "Invalid recipient number. "
+                                    + "Please use +27 followed by "
+                                    + "9 digits."
+                            );
 
-                } else {
-
-            System.out.println(
-            "Invalid option. Message not sent."
-                );
+                            continue;
                         }
 
-            System.out.println(
-            "Messages entered: " + messagesEntered
-            + " of " + maxMessages
-              );
-              }
+                        // Validate the message ID.
+                        if (!msg.checkMessageID()) {
 
-            System.out.println(
-            "You have reached your message entry limit."
+                            System.out.println("Invalid message ID.");
+                            continue;
+                        }
+
+                        // Validate message length.
+                        String messageStatus = msg.sentMessage();
+
+                        if (!messageStatus.equals(
+                                "Message ready to send")) {
+
+                            System.out.println(messageStatus);
+                            continue;
+                        }
+
+                        // Display message details.
+                        System.out.println(msg.printMessage());
+
+                        System.out.println("\n1) Send Message");
+                        System.out.println("2) Disregard Message");
+                        System.out.println("3) Store Message");
+
+                        int choice = readInteger(
+                                input, "Choose an option: "
+                        );
+
+                        boolean completed = false;
+
+                        if (choice == 1) {
+
+                            msg.markAsSent();
+
+                            System.out.println(
+                                    "Message successfully sent."
+                            );
+
+                            completed = true;
+
+                        } else if (choice == 2) {
+
+                            msg.markAsDisregarded();
+
+                            System.out.println(
+                                    "Message disregarded."
+                            );
+
+                            completed = true;
+
+                        } else if (choice == 3) {
+
+                            msg.storeMessage();
+
+                            System.out.println(
+                                    "Message successfully stored."
+                            );
+
+                            completed = true;
+
+                        } else {
+
+                            System.out.println(
+                                    "Invalid option. Message not processed."
+                            );
+                        }
+
+                        if (completed) {
+
+                            messagesEntered++;
+
+                            System.out.println(
+                                    "Messages entered: "
+                                    + messagesEntered
+                                    + " of " + maxMessages
+                            );
+                        }
+                    }
+
+                    if (messagesEntered >= maxMessages) {
+
+                        System.out.println(
+                                "You have reached your message entry limit."
+                        );
+
+                        System.out.println(
+                                "Total messages sent: "
+                                + Message.getTotalMessagesSent()
+                        );
+                    }
+
+                    break;
+
+                case 2:
+
+                    System.out.println("Coming Soon.");
+                    break;
+
+                case 3:
+
+                    System.out.println("Application Closed.");
+                    running = false;
+                    break;
+
+                case 4:
+
+                    storedMessagesMenu(input);
+                    break;
+
+                default:
+
+                    System.out.println(
+                            "Invalid option. Please choose 1, 2, 3, or 4."
                     );
+            }
+        }
 
-            System.out.println(
-            "Total messages sent: " + totalMessagesSent
+        input.close();
+    }
+
+    // PART 3: STORED MESSAGES SUBMENU
+    private static void storedMessagesMenu(Scanner input) {
+
+        boolean inSubmenu = true;
+
+        while (inSubmenu) {
+
+            System.out.println("\n--- STORED MESSAGES ---");
+            System.out.println("1) Display senders and recipients");
+            System.out.println("2) Display the longest stored message");
+            System.out.println("3) Search for a message ID");
+            System.out.println("4) Search messages for a recipient");
+            System.out.println("5) Delete a message using its hash");
+            System.out.println("6) Display the full message report");
+            System.out.println("7) Return to main menu");
+
+            int choice = readInteger(input, "Choose an option: ");
+
+            switch (choice) {
+
+                case 1:
+
+                    System.out.println(
+                            Message.displayStoredSendersAndRecipients()
                     );
 
                     break;
 
                 case 2:
 
-            // This feature is still in development
-            System.out.println("Coming Soon.");
+                    System.out.println("\nLongest stored message:");
+
+                    System.out.println(
+                            Message.displayLongestStoredMessage()
+                    );
 
                     break;
 
                 case 3:
 
-            System.out.println("Application Closed.");
-                 running = false;
+                    System.out.print("Enter message ID: ");
+                    String messageID = input.nextLine();
 
+                    System.out.println(
+                            Message.searchMessageByID(messageID)
+                    );
+
+                    break;
+
+                case 4:
+
+                    System.out.print("Enter recipient number: ");
+                    String recipient = input.nextLine();
+
+                    System.out.println(
+                            Message.searchMessagesByRecipient(recipient)
+                    );
+
+                    break;
+
+                case 5:
+
+                    System.out.print("Enter message hash: ");
+                    String hash = input.nextLine();
+
+                    System.out.println(
+                            Message.deleteMessageByHash(hash)
+                    );
+
+                    break;
+
+                case 6:
+
+                    System.out.println(
+                            Message.displayMessageReport()
+                    );
+
+                    break;
+
+                case 7:
+
+                    inSubmenu = false;
                     break;
 
                 default:
 
-            System.out.println(
-            "Invalid option. Please choose 1, 2, or 3."
+                    System.out.println(
+                            "Invalid option. Please choose from 1 to 7."
                     );
             }
         }
+    }
 
-        input.close();
-       }
-
-         // Helper method to safely read numeric menu choices
-          private static int readInteger(
+    // Safely read numeric menu options.
+    private static int readInteger(
             Scanner input, String prompt) {
 
-          while (true) {
+        while (true) {
+
             System.out.print(prompt);
             String value = input.nextLine();
 
             try {
                 return Integer.parseInt(value.trim());
+
             } catch (NumberFormatException e) {
+
                 System.out.println(
-                "Invalid input. Please enter a whole number."
+                        "Invalid input. Please enter a whole number."
                 );
             }
         }
